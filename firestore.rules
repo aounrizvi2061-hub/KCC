@@ -1,0 +1,127 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isValidTimestamp(ts) {
+      return ts is timestamp && ts <= request.time;
+    }
+
+    // --- Team Validation ---
+    function isValidTeam(data) {
+      return data.userId is string && data.userId == request.auth.uid &&
+             data.name is string && data.name.size() >= 1 && data.name.size() <= 100 &&
+             data.shortName is string && data.shortName.size() >= 1 && data.shortName.size() <= 10 &&
+             (!('logoUrl' in data) || data.logoUrl is string) &&
+             (!('captainPlayerId' in data) || data.captainPlayerId is string) &&
+             (!('createdAt' in data) || isValidTimestamp(data.createdAt)) &&
+             (!('updatedAt' in data) || isValidTimestamp(data.updatedAt));
+    }
+
+    // --- Player Validation ---
+    function isValidPlayer(data) {
+      return data.userId is string && data.userId == request.auth.uid &&
+             data.name is string && data.name.size() >= 1 && data.name.size() <= 100 &&
+             data.role is string &&
+             (!('jerseyNumber' in data) || data.jerseyNumber is int) &&
+             (!('battingStyle' in data) || data.battingStyle is string) &&
+             (!('bowlingStyle' in data) || data.bowlingStyle is string) &&
+             (!('photoUrl' in data) || data.photoUrl is string) &&
+             (!('teamId' in data) || data.teamId is string) &&
+             (!('createdAt' in data) || isValidTimestamp(data.createdAt)) &&
+             (!('updatedAt' in data) || isValidTimestamp(data.updatedAt));
+    }
+
+    // --- Match Validation ---
+    function isValidMatch(data) {
+      return data.userId is string && data.userId == request.auth.uid &&
+             data.title is string && data.title.size() >= 1 && data.title.size() <= 150 &&
+             data.format is string &&
+             data.teamAId is string &&
+             data.teamBId is string &&
+             data.status is string &&
+             (!('venue' in data) || data.venue is string) &&
+             (!('matchDate' in data) || data.matchDate is string) &&
+             (!('oversPerInnings' in data) || data.oversPerInnings is int) &&
+             (!('teamAName' in data) || data.teamAName is string) &&
+             (!('teamAShortName' in data) || data.teamAShortName is string) &&
+             (!('teamBName' in data) || data.teamBName is string) &&
+             (!('teamBShortName' in data) || data.teamBShortName is string) &&
+             (!('tossWinnerTeamId' in data) || data.tossWinnerTeamId is string) &&
+             (!('tossDecision' in data) || data.tossDecision is string) &&
+             (!('resultText' in data) || data.resultText is string) &&
+             (!('currentInningsIndex' in data) || data.currentInningsIndex is int) &&
+             (!('currentStrikerId' in data) || data.currentStrikerId is string) &&
+             (!('currentNonStrikerId' in data) || data.currentNonStrikerId is string) &&
+             (!('currentBowlerId' in data) || data.currentBowlerId is string) &&
+             (!('leadTrailText' in data) || data.leadTrailText is string) &&
+             (!('followOnEnforced' in data) || data.followOnEnforced is bool) &&
+             (!('isDeclared' in data) || data.isDeclared is bool) &&
+             (!('day' in data) || data.day is int) &&
+             (!('session' in data) || data.session is int) &&
+             (!('createdAt' in data) || isValidTimestamp(data.createdAt)) &&
+             (!('updatedAt' in data) || isValidTimestamp(data.updatedAt));
+    }
+
+    // --- Delivery Validation ---
+    function isValidDelivery(data) {
+      return data.userId is string && data.userId == request.auth.uid &&
+             data.matchId is string &&
+             data.inningsNumber is int &&
+             data.strikerId is string &&
+             data.bowlerId is string &&
+             (!('overNumber' in data) || data.overNumber is int) &&
+             (!('ballInOver' in data) || data.ballInOver is int) &&
+             (!('legalBallNumber' in data) || data.legalBallNumber is int) &&
+             (!('nonStrikerId' in data) || data.nonStrikerId is string) &&
+             (!('runsBat' in data) || data.runsBat is int) &&
+             (!('extraRuns' in data) || data.extraRuns is int) &&
+             (!('extraType' in data) || data.extraType is string) &&
+             (!('isWicket' in data) || data.isWicket is bool) &&
+             (!('wicketType' in data) || data.wicketType is string) &&
+             (!('dismissedPlayerId' in data) || data.dismissedPlayerId is string) &&
+             (!('fielderId' in data) || data.fielderId is string) &&
+             (!('commentary' in data) || data.commentary is string) &&
+             (!('createdAt' in data) || isValidTimestamp(data.createdAt));
+    }
+
+    // Matches collection
+    match /matches/{matchId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidMatch(request.resource.data);
+      allow update: if isOwner(resource.data.userId) && isValidMatch(request.resource.data);
+      allow delete: if isOwner(resource.data.userId);
+
+      // Ball-by-ball deliveries subcollection
+      match /deliveries/{deliveryId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated() && isValidDelivery(request.resource.data);
+        allow update: if isOwner(resource.data.userId) && isValidDelivery(request.resource.data);
+        allow delete: if isOwner(resource.data.userId);
+      }
+    }
+
+    // Teams collection
+    match /teams/{teamId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidTeam(request.resource.data);
+      allow update: if isOwner(resource.data.userId) && isValidTeam(request.resource.data);
+      allow delete: if isOwner(resource.data.userId);
+    }
+
+    // Players collection
+    match /players/{playerId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidPlayer(request.resource.data);
+      allow update: if isOwner(resource.data.userId) && isValidPlayer(request.resource.data);
+      allow delete: if isOwner(resource.data.userId);
+    }
+  }
+}

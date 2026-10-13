@@ -1,0 +1,116 @@
+{
+  "entities": {
+    "Team": {
+      "title": "Team",
+      "description": "Cricket team participating in KCC club matches",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Owner user ID" },
+        "name": { "type": "string", "description": "Team name" },
+        "shortName": { "type": "string", "description": "Abbreviation (e.g. KCC, ROY)" },
+        "logoUrl": { "type": "string", "description": "URL or resource icon" },
+        "captainPlayerId": { "type": "string", "description": "Player ID of the captain" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp via serverTimestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp via serverTimestamp" }
+      },
+      "required": ["userId", "name", "shortName"]
+    },
+    "Player": {
+      "title": "Player",
+      "description": "Cricket player profile and career tracking",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Owner user ID" },
+        "name": { "type": "string", "description": "Player full name" },
+        "jerseyNumber": { "type": "integer", "description": "Jersey number" },
+        "role": { "type": "string", "description": "Batter, Bowler, All-Rounder, Wicketkeeper" },
+        "battingStyle": { "type": "string", "description": "Right Hand Bat, Left Hand Bat" },
+        "bowlingStyle": { "type": "string", "description": "Right-arm Fast, Right-arm Spin, etc." },
+        "photoUrl": { "type": "string", "description": "Profile photo URL" },
+        "teamId": { "type": "string", "description": "Default or current team ID" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp via serverTimestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp via serverTimestamp" }
+      },
+      "required": ["userId", "name", "role"]
+    },
+    "Match": {
+      "title": "Match",
+      "description": "Cricket match details, state, and scores",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Owner user ID" },
+        "title": { "type": "string", "description": "Match title (e.g. KCC League Final)" },
+        "venue": { "type": "string", "description": "Match ground or stadium" },
+        "matchDate": { "type": "string", "description": "Match date string" },
+        "format": { "type": "string", "description": "TEST, LIMITED_OVERS, CUSTOM" },
+        "oversPerInnings": { "type": "integer", "description": "Scheduled overs for limited overs matches" },
+        "teamAId": { "type": "string", "description": "Team A ID" },
+        "teamAName": { "type": "string", "description": "Team A name" },
+        "teamAShortName": { "type": "string", "description": "Team A abbreviation" },
+        "teamBId": { "type": "string", "description": "Team B ID" },
+        "teamBName": { "type": "string", "description": "Team B name" },
+        "teamBShortName": { "type": "string", "description": "Team B abbreviation" },
+        "tossWinnerTeamId": { "type": "string", "description": "Toss winner team ID" },
+        "tossDecision": { "type": "string", "description": "BAT or BOWL" },
+        "status": { "type": "string", "description": "UPCOMING, LIVE, COMPLETED, ABANDONED" },
+        "resultText": { "type": "string", "description": "Match summary result" },
+        "currentInningsIndex": { "type": "integer", "description": "Active innings index (1-4)" },
+        "currentStrikerId": { "type": "string", "description": "Active striker player ID" },
+        "currentNonStrikerId": { "type": "string", "description": "Active non-striker player ID" },
+        "currentBowlerId": { "type": "string", "description": "Active bowler player ID" },
+        "leadTrailText": { "type": "string", "description": "Test match lead/trail description" },
+        "followOnEnforced": { "type": "boolean", "description": "Whether follow-on is enforced" },
+        "isDeclared": { "type": "boolean", "description": "Whether current innings is declared" },
+        "day": { "type": "integer", "description": "Current test match day (1-5)" },
+        "session": { "type": "integer", "description": "Current test match session (1-3)" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp via serverTimestamp" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Last update timestamp via serverTimestamp" }
+      },
+      "required": ["userId", "title", "format", "teamAId", "teamBId", "status"]
+    },
+    "Delivery": {
+      "title": "Delivery",
+      "description": "Ball-by-ball delivery event in a match",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "description": "Owner user ID" },
+        "matchId": { "type": "string", "description": "Parent match ID" },
+        "inningsNumber": { "type": "integer", "description": "Innings number 1-4" },
+        "overNumber": { "type": "integer", "description": "Over index (0-indexed or 1-indexed)" },
+        "ballInOver": { "type": "integer", "description": "Ball number in over" },
+        "legalBallNumber": { "type": "integer", "description": "Legal ball count in over 1-6" },
+        "strikerId": { "type": "string", "description": "Batter on strike" },
+        "nonStrikerId": { "type": "string", "description": "Non-striker batter" },
+        "bowlerId": { "type": "string", "description": "Current bowler" },
+        "runsBat": { "type": "integer", "description": "Runs scored by batter off the bat" },
+        "extraRuns": { "type": "integer", "description": "Extra runs awarded" },
+        "extraType": { "type": "string", "description": "NONE, WIDE, NO_BALL, BYE, LEG_BYE, PENALTY" },
+        "isWicket": { "type": "boolean", "description": "Whether a wicket fell on this ball" },
+        "wicketType": { "type": "string", "description": "BOWLED, CAUGHT, LBW, RUN_OUT, STUMPED, HIT_WICKET, RETIRED_HURT, RETIRED_OUT" },
+        "dismissedPlayerId": { "type": "string", "description": "Dismissed batter ID" },
+        "fielderId": { "type": "string", "description": "Fielder involved if catch/run-out" },
+        "commentary": { "type": "string", "description": "Generated ball commentary line" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Creation timestamp via serverTimestamp" }
+      },
+      "required": ["userId", "matchId", "inningsNumber", "strikerId", "bowlerId"]
+    }
+  },
+  "firestore": {
+    "/teams/{teamId}": {
+      "schema": { "$ref": "#/entities/Team" },
+      "description": "Cricket teams registered in the match centre"
+    },
+    "/players/{playerId}": {
+      "schema": { "$ref": "#/entities/Player" },
+      "description": "Cricket players pool and profiles"
+    },
+    "/matches/{matchId}": {
+      "schema": { "$ref": "#/entities/Match" },
+      "description": "Matches, state, settings, and scores"
+    },
+    "/matches/{matchId}/deliveries/{deliveryId}": {
+      "schema": { "$ref": "#/entities/Delivery" },
+      "description": "Ball-by-ball delivery log for a match"
+    }
+  }
+}

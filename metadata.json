@@ -1,0 +1,6 @@
+{
+  "name": "KCC Cricket",
+  "description": "KCC Cricket — Official Match Centre for live ball-by-ball scoring, scorecards, player profiles, statistics, and full Test & limited-overs match management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
